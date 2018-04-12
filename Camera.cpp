@@ -1,22 +1,21 @@
 #include"Camera.h"
 
-Camera::Camera(long wWidth, long wHeight) {
+Camera::Camera() {
 
 	//Camera
-	this->camForward = { 0.0f, 0.0f, 1.0f, 0.0f };
-	this->camRight = { 1.0f, 0.0f, 0.0f, 0.0f };
-	this->camUp = { 0.0f, 1.0f, 0.0f, 0.0f };
-	this->camY = { 0.0f, 1.0f, 0.0f, 0.0f };
+	this->camForward = Vector4(0.0f, 0.0f, 1.0f, 0.0f );
+	this->camRight = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+	this->camUp = Vector3(0.0f, 1.0f, 0.0f);
+	this->camY = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
 
-	this->camTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
-	this->position = { 0.0f, 0.0f, 0.0f, 0.0f };
+	this->camTarget = Vector3(0.0f, 0.0f, 0.0f);
+	this->position = Vector3(0.0f, 0.0f, 0.0f);
 
-	this->proj = DirectX::XMMatrixPerspectiveFovLH((DirectX::XM_PI * 0.45f), (wWidth / wHeight), 0.1f, 10000.0f);;
+	this->proj = Matrix::CreatePerspectiveFieldOfView((DirectX::XM_PI * 0.45f), 
+		(WIN_WIDTH / WIN_HEIGHT), 0.1f, 10000.0f);;
 
-	this->pick = false;
-
-	this->camRotation = DirectX::XMMatrixIdentity();
-	this->camView = DirectX::XMMatrixIdentity();
+	this->camRotation = Matrix::Identity;
+	this->camView = Matrix::Identity;
 
 	this->speed = 0.0f;
 	this->moveX = 0.0f;
@@ -27,19 +26,32 @@ Camera::Camera(long wWidth, long wHeight) {
 	//Keyboard and mouse
 	this->keyboard = nullptr;
 	this->mouse = nullptr;
+	this->dI = nullptr;
 
 }
 
 Camera::~Camera() {
 
 	//Unaquire mouse/keyboard from this application
-	this->keyboard->Unacquire();
-	this->mouse->Unacquire();
+	if (this->keyboard) {
 
+		this->keyboard->Unacquire();
+		this->keyboard->Release();
 
-	this->keyboard->Release();
-	this->mouse->Release();
-	this->dI->Release();
+	}
+
+	if (this->mouse) {
+
+		this->mouse->Unacquire();
+		this->mouse->Release();
+
+	}
+
+	if (this->dI) {
+
+		this->dI->Release();
+
+	}
 
 }
 
@@ -125,57 +137,50 @@ void Camera::getInput() {
 
 	}
 
-	//Check if left mouse button is clicked
-	if ((this->currentMouseState.rgbButtons[0] & 0x80) != 0) {
-
-		this->pick = true;
-
-	}
-
 }
 
 void Camera::update(float dt) {
 
 	//Rotation matrix, rotates X, Y & Z
-	this->camRotation = DirectX::XMMatrixRotationRollPitchYaw(this->pitch, this->yaw, 0.0f);
+	this->camRotation = Matrix::CreateFromYawPitchRoll(this->yaw, this->pitch, 0.0f);
 
 	//Transforms defaultForward vector with rotation matrix
-	this->camTarget = DirectX::XMVector3TransformCoord({ 0.0f, 0.0f, 1.0f, 0.0f }, this->camRotation);
+	this->camTarget = Vector3::Transform(Vector3(defForward.x, defForward.y, defForward.z), this->camRotation);
 
 	//Normalize camTarget vector
-	this->camTarget = DirectX::XMVector3Normalize(this->camTarget);
+	this->camTarget.Normalize();
 
 	//Rotation matrix around Y
-	DirectX::XMMATRIX matRotY = DirectX::XMMatrixRotationY(this->yaw);
+	DirectX::XMMATRIX matRotY = Matrix::CreateRotationY(this->yaw);
 
 	//Transform camera vectors with rotation matrix
-	this->camRight = DirectX::XMVector3TransformCoord({ 1.0f, 0.0f, 0.0f, 0.0f }, matRotY);
-	this->camForward = DirectX::XMVector3TransformCoord({ 0.0f, 0.0f, 1.0f, 0.0f }, matRotY);
-	this->camUp = DirectX::XMVector3TransformCoord(this->camUp, matRotY);
+	this->camRight = Vector4::Transform(defRight, matRotY);
+	this->camForward = Vector4::Transform(defForward, matRotY);
+	this->camUp = Vector3::Transform(this->camUp, matRotY);
 
 	//Apply movement to the camera
-	this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->camRight, (this->moveX * dt)), this->position);
-	this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->camForward, (this->moveZ * dt)), this->position);
+	this->position = (this->camRight * (this->moveX * dt)) + this->position;
+	this->position = (this->camForward * (this->moveZ * dt)) + this->position;
 
 	//Reset movement values
 	this->moveX = 0.0f;
 	this->moveZ = 0.0f;
 
 	//Add the position to the camera target matrix
-	this->camTarget = DirectX::XMVectorAdd(this->position, this->camTarget);
+	this->camTarget += this->position;
 
 	//Set values for the camView matrix which is the final view
-	this->camView = DirectX::XMMatrixLookAtLH(this->position, this->camTarget, this->camUp);
+	this->camView = Matrix::CreateLookAt(this->position, this->camTarget, this->camUp);
 
 }
 
-bool Camera::initDI(HINSTANCE hInst, HWND wHandle) {
+bool Camera::initDI(HINSTANCE* hInst, HWND* wHandle) {
 
 	bool result = true;
 
 	//Create direct input object
 	HRESULT hr = DirectInput8Create(
-		hInst,				//Application instance
+		*hInst,				//Application instance
 		DIRECTINPUT_VERSION,//Version of DirectInput to use
 		IID_IDirectInput8,	//Interface of DirectInput to use
 		(void**)&this->dI,	//Pointer to DirectInput object
@@ -218,10 +223,10 @@ bool Camera::initDI(HINSTANCE hInst, HWND wHandle) {
 
 				//Set data format
 				this->keyboard->SetDataFormat(&c_dfDIKeyboard);	//Set type of device
-				this->keyboard->SetCooperativeLevel(wHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);	//Flags
+				this->keyboard->SetCooperativeLevel(*wHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);	//Flags
 
 				this->mouse->SetDataFormat(&c_dfDIMouse);		//Set type of device
-				this->mouse->SetCooperativeLevel(wHandle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);	//Flags
+				this->mouse->SetCooperativeLevel(*wHandle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);	//Flags
 
 			}
 
@@ -233,73 +238,20 @@ bool Camera::initDI(HINSTANCE hInst, HWND wHandle) {
 
 }
 
-DirectX::XMMATRIX Camera::getView(void) const {
+Matrix Camera::getView(void) const {
 
 	return this->camView;
 
 }
 
-DirectX::XMMATRIX Camera::getProj(void) const{
+Matrix Camera::getProj(void) const{
 
 	return this->proj;
 
 }
 
-DirectX::XMVECTOR Camera::getPosition(void) {
+Vector3 Camera::getPosition(void) {
 
 	return this->position;
-
-}
-
-float Camera::getX(void) const{
-
-	return DirectX::XMVectorGetX(this->position);
-
-}
-
-float Camera::getZ(void) const{
-
-	return DirectX::XMVectorGetZ(this->position);
-
-}
-
-bool Camera::getPick(void) const{
-
-	return this->pick;
-
-}
-
-DirectX::XMVECTOR Camera::pickMouse(D3D11_VIEWPORT vp) {
-	
-	//Store x & y mouse pos, move it to center instead of top left corner
-	int mouseX = (this->currentMouseState.lX + (vp.Width / 2));
-	int mouseY = (this->currentMouseState.lY + (vp.Height / 2));
-
-	//Create vectors to each viewport plane
-	DirectX::XMVECTOR nearVec = { (float)mouseX, (float)mouseY, 0.0f };
-	DirectX::XMVECTOR farVec = { (float)mouseX, (float)mouseY, 1.0f };
-
-	//Create world matrix at 0,0,0
-	DirectX::XMMATRIX world = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
-
-	//Unproject nearVec
-	nearVec = DirectX::XMVector3Unproject(nearVec, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height, vp.MinDepth,
-		vp.MaxDepth, this->proj, this->camView, world);
-
-	//Unproject farVec
-	farVec = DirectX::XMVector3Unproject(farVec, vp.TopLeftX, vp.TopLeftY, vp.Width, vp.Height, vp.MinDepth,
-		vp.MaxDepth, this->proj, this->camView, world);
-
-	//Create ray from near to far plane
-	DirectX::XMVECTOR dir = DirectX::XMVectorSubtract(farVec, nearVec);
-	dir = DirectX::XMVector3Normalize(dir);
-	
-	return dir;
-
-}
-
-void Camera::setPick(bool pick) {
-
-	this->pick = pick;
 
 }

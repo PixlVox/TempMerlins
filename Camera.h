@@ -2,31 +2,35 @@
 #define CAMERA_H
 
 //Used for vector & matrix calculations
-#include<DirectXMath.h>
-#include <d3d11.h>
+#include<d3d11.h>
+#include<SimpleMath.h>
+#include"Settings.h"
 
 //Used for keyboard/mouse input
+#include <dinput.h>
 #pragma comment (lib, "dinput8.lib")
 #pragma comment (lib, "dxguid.lib")
-#include <dinput.h>
+
+const Vector4 defRight = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+const Vector4 defForward = Vector4(0.0f, 0.0f, 1.0f, 0.0f);
 
 class Camera {
 
 private:
 
-	//Camera
-	DirectX::XMVECTOR camForward;
-	DirectX::XMVECTOR camRight;
-	DirectX::XMVECTOR camY;
-	DirectX::XMVECTOR camTarget;
-	DirectX::XMVECTOR camUp;
-	DirectX::XMVECTOR position;
+	//Vectors
+	Vector4 camForward;
+	Vector4 camRight;
+	Vector4 camY;
 
-	DirectX::XMMATRIX camRotation;
-	DirectX::XMMATRIX camView;
-	DirectX::XMMATRIX proj;
+	Vector3 camUp;
+	Vector3 camTarget;
+	Vector3 position;
 
-	bool pick;
+	//Matrices
+	Matrix camRotation;
+	Matrix camView;
+	Matrix proj;
 
 	//Camera movement and rotation values
 	float speed;
@@ -46,24 +50,17 @@ private:
 
 public:
 
-	Camera(long wWidth, long wHeight);
+	Camera();
 	~Camera();
 
 	void getInput();
 	void update(float dt);
-	bool initDI(HINSTANCE hInst, HWND wHandle);
-	DirectX::XMVECTOR pickMouse(D3D11_VIEWPORT vp);
+	bool initDI(HINSTANCE* hInst, HWND* wHandle);
 
 	//Get
-	DirectX::XMMATRIX getView(void) const;
-	DirectX::XMMATRIX getProj(void) const;
-	DirectX::XMVECTOR getPosition(void);
-	float getX(void) const;
-	float getZ(void) const;
-	bool getPick(void) const;
-
-	//Set
-	void setPick(bool pick);
+	Matrix getView(void) const;
+	Matrix getProj(void) const;
+	Vector3 getPosition(void);
 
 };
 
