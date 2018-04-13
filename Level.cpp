@@ -1,13 +1,8 @@
 #include "Level.h"
 
-Level::Level(ID3D11Device *& in_device, ID3D11DeviceContext *& in_dContext, ObjectImporter *& importer)
+Level::Level()
 {
-	this->device = in_device;
-	this->deviceContext = in_dContext;
-	this->objImporter = importer;
-	this->fileName = "Test.obj";
-	this->meshes = nullptr;
-	this->standardWorld = DirectX::XMMatrixIdentity();
+
 }
 
 Level::~Level()
@@ -19,9 +14,17 @@ Level::~Level()
 	this->fileName.clear();
 }
 
-bool Level::initialize()
+bool Level::initialize(ID3D11Device * in_device, ID3D11DeviceContext * in_dContext, ObjectImporter * importer)
 {
 	//start up a scene
+	this->device = in_device;
+	this->deviceContext = in_dContext;
+	this->objImporter = importer;
+	this->fileName = "Test.obj";
+	this->meshes = nullptr;
+	this->standardWorld = DirectX::XMMatrixIdentity();
+
+
 	bool rValue = false;
 	rValue = this->objImporter->importModel(this->fileName, this->meshes);
 	if (rValue)
@@ -33,7 +36,7 @@ bool Level::initialize()
 	return rValue;
 }
 
-std::vector<Object>* Level::getObjects() const
+std::vector<Object>* Level::getObjects()
 {
 	return &this->sceneObjects;
 }

@@ -19,11 +19,11 @@ private:
 
 	void createObjects();
 public:
-	Level(ID3D11Device *& in_device, ID3D11DeviceContext *& in_dContext, ObjectImporter *& importer);
+	Level();
 	~Level();
 
-	bool initialize();
-	std::vector<Object>* getObjects() const;
+	bool initialize(ID3D11Device * in_device, ID3D11DeviceContext * in_dContext, ObjectImporter * importer);
+	std::vector<Object>* getObjects();
 };
 
 #endif // !LEVEL_H
