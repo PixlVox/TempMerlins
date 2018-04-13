@@ -106,15 +106,14 @@ void Engine::init(HWND* wHandle) {
 	this->updateVBuffer();
 
 	//Create const buffers
-	this->createConstBuffer(0, this->constBufferMatrix);
-	this->createConstBuffer(1, this->constBufferLight);
+	this->createConstBuffer();
 
 }
 
 void Engine::update(Camera* cam) {
 
 	//Update matrices
-	//this->updateMatrices(cam);
+	this->updateMatrices(cam);
 	
 	//Render
 	this->render();
@@ -176,32 +175,21 @@ void Engine::createContext(HWND* wndHandle) {
 
 }
 
-void Engine::createConstBuffer(int type, ID3D11Buffer* buffer) {
+void Engine::createConstBuffer() {
 
 	HRESULT hr = 0;
 
 	//Buffer Desc
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-
-	if (type == 0) {
-
-		bufferDesc.ByteWidth = sizeof(Matrices);
-
-	}
-	else if(type == 1){
-
-		bufferDesc.ByteWidth = sizeof(Light);
-
-	}
-
+	bufferDesc.ByteWidth = sizeof(Matrices);
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
 
 	//Create buffer
-	hr = this->device->CreateBuffer(&bufferDesc, nullptr, &buffer);
+	hr = this->device->CreateBuffer(&bufferDesc, nullptr, &this->constBufferMatrix);
 
 	if (FAILED(hr)) {
 
@@ -209,7 +197,23 @@ void Engine::createConstBuffer(int type, ID3D11Buffer* buffer) {
 
 	}
 
+	//Buffer Desc
+	D3D11_BUFFER_DESC bufferDescL;
+	bufferDescL.Usage = D3D11_USAGE_DYNAMIC;
+	bufferDescL.ByteWidth = sizeof(Light);
+	bufferDescL.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bufferDescL.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bufferDescL.MiscFlags = 0;
+	bufferDescL.StructureByteStride = 0;
 
+	//Create buffer
+	hr = this->device->CreateBuffer(&bufferDescL, nullptr, &this->constBufferLight);
+
+	if (FAILED(hr)) {
+
+		exit(-1);
+
+	}
 
 }
 

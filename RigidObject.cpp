@@ -1,8 +1,7 @@
-#include "stdafx.h"
 #include "RigidObject.h"
 
-RigidObject::RigidObject(std::vector<Mesh> inMesh, XMMATRIX inWorld)
-	:Object(inMesh, inWorld)
+RigidObject::RigidObject(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext)
+	:Object(inMesh, inWorld, inGDevice, inGDeviceContext)
 {
 }
 

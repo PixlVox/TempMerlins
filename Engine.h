@@ -48,7 +48,7 @@ private:
 	Light light;
 
 	//Private functions
-	void createConstBuffer(int type, ID3D11Buffer* buffer);
+	void createConstBuffer();
 	void createDepthStencil();
 	void createShaders();
 	void createContext(HWND* wndHandle);
