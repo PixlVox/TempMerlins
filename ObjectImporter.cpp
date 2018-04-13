@@ -65,7 +65,7 @@ bool ObjectImporter::importModel(const std::string & fname, std::vector<Mesh>* &
 			vertex.uv.y = cMesh->mTextureCoords[n]->y;
 
 			//put vertex into vector
-			meshes->at(i).vertexes.push_back(vertex);
+			meshes->at(i).vertices.push_back(vertex);
 		}
 
 		//loop over faces
