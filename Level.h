@@ -2,6 +2,7 @@
 #define LEVEL_H
 #include"ObjectImporter.h"
 #include"Object.h"
+#include<string>
 
 class Level
 {

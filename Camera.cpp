@@ -3,19 +3,18 @@
 Camera::Camera() {
 
 	//Camera
-	this->camForward = Vector4(0.0f, 0.0f, 1.0f, 0.0f );
-	this->camRight = Vector4(1.0f, 0.0f, 0.0f, 0.0f);
-	this->camUp = Vector3(0.0f, 1.0f, 0.0f);
-	this->camY = Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+	this->camForward = { 0.0f, 0.0f, 1.0f, 0.0f };
+	this->camRight = { 1.0f, 0.0f, 0.0f, 0.0f };
+	this->camUp = { 0.0f, 1.0f, 0.0f, 0.0f };
+	this->camY = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	this->camTarget = Vector3(0.0f, 0.0f, 0.0f);
-	this->position = Vector3(0.0f, 0.0f, 0.0f);
+	this->camTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
+	this->position = { 0.0f, 0.0f, -2.0f, 0.0f };
 
-	this->proj = Matrix::CreatePerspectiveFieldOfView((DirectX::XM_PI * 0.45f), 
-		(WIN_WIDTH / WIN_HEIGHT), 0.1f, 10000.0f);;
+	this->proj = DirectX::XMMatrixPerspectiveFovLH((DirectX::XM_PI * 0.45f), (WIN_WIDTH / WIN_HEIGHT), 0.1f, 10000.0f);;
 
-	this->camRotation = Matrix::Identity;
-	this->camView = Matrix::Identity;
+	this->camRotation = DirectX::XMMatrixIdentity();
+	this->camView = DirectX::XMMatrixIdentity();
 
 	this->speed = 0.0f;
 	this->moveX = 0.0f;
@@ -142,35 +141,35 @@ void Camera::getInput() {
 void Camera::update(float dt) {
 
 	//Rotation matrix, rotates X, Y & Z
-	this->camRotation = Matrix::CreateFromYawPitchRoll(this->yaw, this->pitch, 0.0f);
+	this->camRotation = DirectX::XMMatrixRotationRollPitchYaw(this->pitch, this->yaw, 0.0f);
 
 	//Transforms defaultForward vector with rotation matrix
-	this->camTarget = Vector3::Transform(Vector3(defForward.x, defForward.y, defForward.z), this->camRotation);
+	this->camTarget = DirectX::XMVector3TransformCoord({ 0.0f, 0.0f, 1.0f, 0.0f }, this->camRotation);
 
 	//Normalize camTarget vector
-	this->camTarget.Normalize();
+	this->camTarget = DirectX::XMVector3Normalize(this->camTarget);
 
 	//Rotation matrix around Y
-	DirectX::XMMATRIX matRotY = Matrix::CreateRotationY(this->yaw);
+	DirectX::XMMATRIX matRotY = DirectX::XMMatrixRotationY(this->yaw);
 
 	//Transform camera vectors with rotation matrix
-	this->camRight = Vector4::Transform(defRight, matRotY);
-	this->camForward = Vector4::Transform(defForward, matRotY);
-	this->camUp = Vector3::Transform(this->camUp, matRotY);
+	this->camRight = DirectX::XMVector3TransformCoord({ 1.0f, 0.0f, 0.0f, 0.0f }, matRotY);
+	this->camForward = DirectX::XMVector3TransformCoord({ 0.0f, 0.0f, 1.0f, 0.0f }, matRotY);
+	this->camUp = DirectX::XMVector3TransformCoord(this->camUp, matRotY);
 
 	//Apply movement to the camera
-	this->position = (this->camRight * (this->moveX * dt)) + this->position;
-	this->position = (this->camForward * (this->moveZ * dt)) + this->position;
+	this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->camRight, (this->moveX * dt)), this->position);
+	this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->camForward, (this->moveZ * dt)), this->position);
 
 	//Reset movement values
 	this->moveX = 0.0f;
 	this->moveZ = 0.0f;
 
 	//Add the position to the camera target matrix
-	this->camTarget += this->position;
+	this->camTarget = DirectX::XMVectorAdd(this->position, this->camTarget);
 
 	//Set values for the camView matrix which is the final view
-	this->camView = Matrix::CreateLookAt(this->position, this->camTarget, this->camUp);
+	this->camView = DirectX::XMMatrixLookAtLH(this->position, this->camTarget, this->camUp);
 
 }
 
@@ -238,19 +237,19 @@ bool Camera::initDI(HINSTANCE* hInst, HWND* wHandle) {
 
 }
 
-Matrix Camera::getView(void) const {
+DirectX::XMMATRIX Camera::getView(void) const {
 
 	return this->camView;
 
 }
 
-Matrix Camera::getProj(void) const{
+DirectX::XMMATRIX Camera::getProj(void) const{
 
 	return this->proj;
 
 }
 
-Vector3 Camera::getPosition(void) {
+DirectX::XMVECTOR Camera::getPosition(void) {
 
 	return this->position;
 

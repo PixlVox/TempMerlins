@@ -19,18 +19,16 @@ class Camera {
 private:
 
 	//Vectors
-	Vector4 camForward;
-	Vector4 camRight;
-	Vector4 camY;
+	DirectX::XMVECTOR camForward;
+	DirectX::XMVECTOR camRight;
+	DirectX::XMVECTOR camY;
+	DirectX::XMVECTOR camTarget;
+	DirectX::XMVECTOR camUp;
+	DirectX::XMVECTOR position;
 
-	Vector3 camUp;
-	Vector3 camTarget;
-	Vector3 position;
-
-	//Matrices
-	Matrix camRotation;
-	Matrix camView;
-	Matrix proj;
+	DirectX::XMMATRIX camRotation;
+	DirectX::XMMATRIX camView;
+	DirectX::XMMATRIX proj;
 
 	//Camera movement and rotation values
 	float speed;
@@ -58,9 +56,9 @@ public:
 	bool initDI(HINSTANCE* hInst, HWND* wHandle);
 
 	//Get
-	Matrix getView(void) const;
-	Matrix getProj(void) const;
-	Vector3 getPosition(void);
+	DirectX::XMMATRIX getView(void) const;
+	DirectX::XMMATRIX getProj(void) const;
+	DirectX::XMVECTOR getPosition(void);
 
 };
 
