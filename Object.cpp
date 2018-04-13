@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Object.h"
 
 void Object::createBuffers()
@@ -33,12 +32,12 @@ void Object::createBuffers()
 
 }
 
-Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext)
+Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *& inGDevice, ID3D11DeviceContext *& inGDeviceContext)
 {
 	this->mesh = inMesh;
 	this->world = inWorld;
-	this->gDevice = &inGDevice;
-	this->gDeviceContext = &inGDeviceContext;
+	this->gDevice = inGDevice;
+	this->gDeviceContext = inGDeviceContext;
 	this->isVisible = false;
 	this->isColliding = false;
 
@@ -58,27 +57,27 @@ void Object::operator=(const Object & obj)
 	this->world = obj.world;
 }
 
-void Object::setMesh(Mesh &inMesh)
+void Object::setMesh(const Mesh &inMesh)
 {
 	this->mesh = inMesh;
 }
 
-void Object::setWorldMatrix(DirectX::XMMATRIX inWorld)
+void Object::setWorldMatrix(const DirectX::XMMATRIX &inWorld)
 {
 	this->world = inWorld;
 }
 
-void Object::setVisibility(bool inIsVisible)
+void Object::setVisibility(const bool &inIsVisible)
 {
 	this->isVisible = inIsVisible;
 }
 
-void Object::setCollision(bool inIsColliding)
+void Object::setCollision(const bool &inIsColliding)
 {
 	this->isColliding = inIsColliding;
 }
 
-Mesh Object::getMesh()
+Mesh Object::getMesh() const
 {
 	return this->mesh;
 }
@@ -88,12 +87,12 @@ DirectX::XMMATRIX Object::getWorldMatrix()
 	return this->world;
 }
 
-ID3D11Buffer * Object::getVBuffer()
+ID3D11Buffer * Object::getVBuffer() const
 {
 	return this->vBuffer;
 }
 
-ID3D11Buffer * Object::getIBuffer()
+ID3D11Buffer * Object::getIBuffer() const
 {
 	return this->iBuffer;
 }
@@ -103,12 +102,12 @@ Object::DrawInformation Object::getDrawInfo()
 	return this->drawInfo;
 }
 
-bool Object::getVisibility()
+bool Object::getVisibility() const
 {
 	return this->isVisible;
 }
 
-bool Object::getCollision()
+bool Object::getCollision() const
 {
 	return this->isColliding;
 }

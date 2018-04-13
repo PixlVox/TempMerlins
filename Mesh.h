@@ -17,7 +17,7 @@ public:
 	};
 
 	std::vector<int> indices;
-	std::vector<Vertex> vertexes;
+	std::vector<Vertex> vertices;
 
 private:
 	DirectX::SimpleMath::Vector3 cDiffuse;

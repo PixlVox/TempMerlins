@@ -25,22 +25,22 @@ private:
 	void createBuffers();
 
 public:
-	Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext);
+	Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *& inGDevice, ID3D11DeviceContext *& inGDeviceContext);
 	virtual ~Object();
 	void operator=(const Object& obj);
 
-	void setMesh(Mesh &inMesh);
-	void setWorldMatrix(DirectX::XMMATRIX inWorld);
-	void setVisibility(bool inIsVisible);
-	void setCollision(bool inIsColliding);
+	void setMesh(const Mesh &inMesh);
+	void setWorldMatrix(const DirectX::XMMATRIX &inWorld);
+	void setVisibility(const bool &inIsVisible);
+	void setCollision(const bool &inIsColliding);
 
-	Mesh getMesh();
+	Mesh getMesh() const;
 	DirectX::XMMATRIX getWorldMatrix();
-	ID3D11Buffer* getVBuffer();
-	ID3D11Buffer*getIBuffer();
+	ID3D11Buffer* getVBuffer() const;
+	ID3D11Buffer*getIBuffer() const;
 	DrawInformation getDrawInfo();
-	bool getVisibility();
-	bool getCollision();
+	bool getVisibility() const;
+	bool getCollision() const;
 };
 
 #endif
