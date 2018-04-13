@@ -9,7 +9,7 @@ Camera::Camera() {
 	this->camY = { 0.0f, 1.0f, 0.0f, 0.0f };
 
 	this->camTarget = { 0.0f, 0.0f, 0.0f, 0.0f };
-	this->position = { 0.0f, 0.0f, -2.0f, 0.0f };
+	this->position = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	this->proj = DirectX::XMMatrixPerspectiveFovLH((DirectX::XM_PI * 0.45f), (WIN_WIDTH / WIN_HEIGHT), 0.1f, 10000.0f);;
 

@@ -2,9 +2,10 @@
 
 Level::Level()
 {
-	this->fileName = "Test.obj";
+	this->fileName = "Obj//Test.obj";
 	this->meshes = nullptr;
 	this->standardWorld = DirectX::XMMatrixIdentity();
+	this->standardWorld *= DirectX::XMMatrixScaling(1000, 1000, 1000);
 }
 
 Level::~Level()

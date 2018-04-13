@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include"Camera.h"
+#include"Level.h"
 
 #include <d3dcompiler.h>
 
@@ -15,7 +16,6 @@ private:
 	ID3D11InputLayout* inputLayout;
 
 	//Buffers
-	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* constBufferMatrix;
 	ID3D11Buffer* constBufferLight;
 
@@ -54,9 +54,8 @@ private:
 	void createContext(HWND* wndHandle);
 
 	void setViewPort();
-	void updateVBuffer();
-	void updateMatrices(Camera* cam);
-	void render();
+	void updateMatrices(Camera* cam, Object* object);
+	void render(Object* object);
 
 public:
 
@@ -64,7 +63,11 @@ public:
 	~Engine();
 
 	void init(HWND* wHandle);
-	void update(Camera* cam);
+	void update(Camera* cam, std::vector<Object>* objects);
+
+	//Get
+	ID3D11Device* getDevice(void) const;
+	ID3D11DeviceContext* getDeviceContext(void) const;
 
 };
 

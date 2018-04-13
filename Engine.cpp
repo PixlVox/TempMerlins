@@ -14,12 +14,9 @@ Engine::Engine() {
 	
 	//Object stuff
 	this->inputLayout = nullptr;
-	this->vBuffer = nullptr;
-
-	//Matrix buffer
-	this->constBufferMatrix = nullptr;
 
 	//Light buffer
+	this->constBufferMatrix = nullptr;
 	this->constBufferLight = nullptr;
 
 	//Init matrix values
@@ -50,12 +47,6 @@ Engine::~Engine() {
 	if (this->deviceC) {
 
 		this->deviceC->Release();
-
-	}
-
-	if (this->vBuffer) {
-
-		this->vBuffer->Release();
 
 	}
 
@@ -102,29 +93,32 @@ void Engine::init(HWND* wHandle) {
 	//Create shaders
 	this->createShaders();
 
-	//Create vBuffer data
-	this->updateVBuffer();
-
 	//Create const buffers
 	this->createConstBuffer();
 
 }
 
-void Engine::update(Camera* cam) {
-
-	//Update matrices
-	this->updateMatrices(cam);
+void Engine::update(Camera* cam, std::vector<Object>* objects) {
 	
 	//Render
-	this->render();
+	for (int i = 0; i < objects->size(); i++) {
+
+		//Update matrices
+		this->updateMatrices(cam, &objects->at(i));
+
+		//Render
+		this->render(&objects->at(i));
+
+	}
 
 	//Update swapChain
 	this->swapChain->Present(0, 0);
 
 }
 
-void Engine::updateMatrices(Camera* cam) {
+void Engine::updateMatrices(Camera* cam, Object* object) {
 
+	this->matrices.world = object->getWorldMatrix();
 	this->matrices.view = cam->getView();
 	this->matrices.proj = cam->getProj();
 
@@ -182,7 +176,7 @@ void Engine::createConstBuffer() {
 	//Buffer Desc
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(Matrices);
+	bufferDesc.ByteWidth = sizeof(Matrix);
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bufferDesc.MiscFlags = 0;
@@ -331,7 +325,7 @@ void Engine::createShaders() {
 	//create input layout (verified using vertex shader)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	this->device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &this->inputLayout);
@@ -394,52 +388,7 @@ void Engine::setViewPort() {
 
 }
 
-void Engine::updateVBuffer() {
-
-	struct TriangleVertex {
-
-		float x, y, z;
-		float r, g, b;
-
-	};
-
-	TriangleVertex triangleVertices[6] = {
-
-		//Triangle 1
-		-0.25f, 0.25f, 0.0f,//v0 pos
-		0.0f, 0.0f,	1.0f,	//v0 uv
-
-		0.25f, -0.25f, 0.0f,//v1 pos
-		1.0f, 1.0f,	0.0f,	//v1 uv
-
-		-0.25f, -0.25f, 0.0f,//v2 pos
-		0.0f, 1.0f,	0.0f,	//v2 uv
-
-		//Triangle 2
-		0.25f, -0.25f, 0.0f,//v0 pos
-		1.0f, 1.0f,	0.0f,	//v0 uv
-
-		-0.25f, 0.25f, 0.0f,//v1 pos
-		0.0f, 0.0f,	1.0f,	//v1 uv
-
-		0.25f, 0.25f, 0.0f, //v2 pos
-		1.0f, 0.0f, 1.0f	//v2 uv
-
-	};
-
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(triangleVertices);
-
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = triangleVertices;
-	this->device->CreateBuffer(&bufferDesc, &data, &this->vBuffer);
-
-}
-
-void Engine::render() {
+void Engine::render(Object* object) {
 
 	//Standard pixel color
 	float clearColor[] = { 0, 0, 0, 1 };
@@ -453,7 +402,15 @@ void Engine::render() {
 	UINT32 vertexSize = sizeof(float) * 6;
 	UINT32 offset = 0;
 
-	this->deviceC->IASetVertexBuffers(0, 1,&this->vBuffer, &vertexSize, &offset);
+	//Bind vertex buffer
+	ID3D11Buffer* tempVBuffer = object->getVBuffer();
+	this->deviceC->IASetVertexBuffers(0, 1, &tempVBuffer, &vertexSize, &offset);
+
+	//Bind index buffer
+	//ID3D11Buffer* tempIBuffer = object->getIBuffer();
+	//this->deviceC->IASetIndexBuffer(tempIBuffer, DXGI_FORMAT_R32_UINT, offset);
+
+	//Set input layout
 	this->deviceC->IASetInputLayout(this->inputLayout);
 
 	//Matrices
@@ -480,5 +437,17 @@ void Engine::render() {
 
 	// draw geometry
 	this->deviceC->Draw(6, 0);
+
+}
+
+ID3D11Device* Engine::getDevice(void) const{
+
+	return this->device;
+
+}
+
+ID3D11DeviceContext* Engine::getDeviceContext(void) const{
+
+	return this->deviceC;
 
 }

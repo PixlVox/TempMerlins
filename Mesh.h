@@ -13,7 +13,7 @@ public:
 	{
 		DirectX::SimpleMath::Vector3 v_xyz;
 		DirectX::SimpleMath::Vector3 n_xyz;
-		DirectX::SimpleMath::Vector2 uv;
+		//DirectX::SimpleMath::Vector2 uv;
 	};
 
 	std::vector<int> indices;

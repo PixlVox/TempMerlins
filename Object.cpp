@@ -8,10 +8,11 @@ void Object::createBuffers()
 	vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vBufferDesc.ByteWidth = sizeof(Mesh::Vertex) * this->mesh.vertices.size();	
+	vBufferDesc.CPUAccessFlags = 0;
+	vBufferDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA vBufferData;
 	vBufferData.pSysMem = this->mesh.vertices.data();
-
 	this->gDevice->CreateBuffer(&vBufferDesc, &vBufferData, &this->vBuffer);
 
 	///// Create index buffer /////
@@ -27,8 +28,7 @@ void Object::createBuffers()
 	iBufferData.pSysMem = this->mesh.indices.data();
 	iBufferData.SysMemPitch = 0;
 	iBufferData.SysMemSlicePitch = 0; 
-
-	this->gDeviceContext->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
+	this->gDevice->CreateBuffer(&iBufferDesc, &iBufferData, &this->iBuffer);
 	
 }
 
@@ -48,7 +48,7 @@ Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *& in
 Object::~Object()
 {	
 	vBuffer->Release();
-	iBuffer->Release();
+	//iBuffer->Release();
 }
 
 void Object::operator=(const Object & obj)

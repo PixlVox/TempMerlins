@@ -20,6 +20,10 @@ void Game::init(HINSTANCE* hInst, HWND* wHandle) {
 	//init camera
 	this->cam.initDI(hInst, wHandle);
 
+	//Init level
+	this->level.initialize(this->engine.getDevice(), this->engine.getDeviceContext(),
+		&this->objImporter);
+
 }
 
 void Game::update(float dt) {
@@ -31,7 +35,7 @@ void Game::update(float dt) {
 	this->cam.update(dt);
 
 	//Update engine
-	this->engine.update(&this->cam);
+	this->engine.update(&this->cam, this->level.getObjects());
 
 }
 
