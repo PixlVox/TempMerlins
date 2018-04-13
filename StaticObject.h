@@ -7,7 +7,7 @@ class StaticObject : public Object
 private:
 
 public:
-	StaticObject(std::vector<Mesh> inMesh, XMMATRIX inWorld);
+	StaticObject(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext);
 	virtual ~StaticObject();
 	void operator=(const StaticObject& obj);
 };
