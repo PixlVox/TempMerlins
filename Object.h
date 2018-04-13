@@ -18,13 +18,14 @@ private:
 	ID3D11Buffer* vBuffer;
 	ID3D11Buffer* iBuffer;
 	ID3D11Device* gDevice;
+	ID3D11DeviceContext* gDeviceContext;
 	DrawInformation drawInfo;	
 	bool isVisible;
 	bool isColliding;
 	void createBuffers();
 
 public:
-	Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice);
+	Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext);
 	virtual ~Object();
 	void operator=(const Object& obj);
 

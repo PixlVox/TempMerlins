@@ -20,20 +20,25 @@ void Object::createBuffers()
 	memset(&iBufferDesc, 0, sizeof(iBufferDesc));
 	iBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	iBufferDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-	iBufferDesc.ByteWidth = sizeof(int) * this->mesh.indices.size;
+	iBufferDesc.ByteWidth = sizeof(unsigned int) * this->mesh.indices.size;
+	iBufferDesc.CPUAccessFlags = 0;
+	iBufferDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA iBufferData;
 	iBufferData.pSysMem = this->mesh.indices.data;
+	iBufferData.SysMemPitch = 0;
+	iBufferData.SysMemSlicePitch = 0; 
 
-	this->gDevice->CreateBuffer(&iBufferDesc, &iBufferData, &iBuffer);
+	this->gDeviceContext->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 }
 
-Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice)
+Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device &inGDevice, ID3D11DeviceContext &inGDeviceContext)
 {
 	this->mesh = inMesh;
 	this->world = inWorld;
 	this->gDevice = &inGDevice;
+	this->gDeviceContext = &inGDeviceContext;
 	this->isVisible = false;
 	this->isColliding = false;
 
