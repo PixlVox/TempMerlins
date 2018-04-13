@@ -33,6 +33,11 @@ bool Level::initialize()
 	return rValue;
 }
 
+std::vector<Object>* Level::getObjects() const
+{
+	return &this->sceneObjects;
+}
+
 void Level::createObjects()
 {
 	//reserver space for objects, one spot per mesh

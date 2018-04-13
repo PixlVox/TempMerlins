@@ -22,9 +22,8 @@ public:
 	Level(ID3D11Device *& in_device, ID3D11DeviceContext *& in_dContext, ObjectImporter *& importer);
 	~Level();
 
-
-
 	bool initialize();
+	std::vector<Object>* getObjects() const;
 };
 
 #endif // !LEVEL_H
