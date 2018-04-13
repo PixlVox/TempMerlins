@@ -2,7 +2,9 @@
 
 Level::Level()
 {
-
+	this->fileName = "Test.obj";
+	this->meshes = nullptr;
+	this->standardWorld = DirectX::XMMatrixIdentity();
 }
 
 Level::~Level()
@@ -20,10 +22,6 @@ bool Level::initialize(ID3D11Device * in_device, ID3D11DeviceContext * in_dConte
 	this->device = in_device;
 	this->deviceContext = in_dContext;
 	this->objImporter = importer;
-	this->fileName = "Test.obj";
-	this->meshes = nullptr;
-	this->standardWorld = DirectX::XMMatrixIdentity();
-
 
 	bool rValue = false;
 	rValue = this->objImporter->importModel(this->fileName, this->meshes);
