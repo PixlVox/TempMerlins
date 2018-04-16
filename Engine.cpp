@@ -325,7 +325,7 @@ void Engine::createShaders() {
 	//create input layout (verified using vertex shader)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	this->device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &this->inputLayout);
@@ -391,7 +391,7 @@ void Engine::setViewPort() {
 void Engine::render(Object* object) {
 
 	//Standard pixel color
-	float clearColor[] = { 0, 0, 0, 1 };
+	float clearColor[] = { 0.25, 0.5, 0.75, 1 };
 
 	//Set rendering state
 	this->deviceC->VSSetShader(this->vShader, nullptr, 0);
