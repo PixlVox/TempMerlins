@@ -6,7 +6,7 @@ class RigidObject : public Object
 private:
 
 public:
-	RigidObject(const Mesh *&inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *&inGDevice, ID3D11DeviceContext *&inGDeviceContext);
+	RigidObject(const Mesh &inMesh, const DirectX::XMMATRIX &inWorld, ID3D11Device *&inGDevice);
 	virtual ~RigidObject();
 	void operator=(const RigidObject& obj);
 };

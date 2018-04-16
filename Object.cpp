@@ -7,12 +7,11 @@ void Object::createBuffers()
 	memset(&vBufferDesc, 0, sizeof(vBufferDesc));
 	vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vBufferDesc.ByteWidth = sizeof(Mesh::Vertex) * this->mesh.vertices.size();	
-	vBufferDesc.CPUAccessFlags = 0;
-	vBufferDesc.MiscFlags = 0;
+	vBufferDesc.ByteWidth = sizeof(Mesh::Vertex) * (this->mesh.vertexes.size());	
 
 	D3D11_SUBRESOURCE_DATA vBufferData;
-	vBufferData.pSysMem = this->mesh.vertices.data();
+	vBufferData.pSysMem = this->mesh.vertexes.data();
+
 	this->gDevice->CreateBuffer(&vBufferDesc, &vBufferData, &this->vBuffer);
 
 	///// Create index buffer /////
@@ -28,16 +27,16 @@ void Object::createBuffers()
 	iBufferData.pSysMem = this->mesh.indices.data();
 	iBufferData.SysMemPitch = 0;
 	iBufferData.SysMemSlicePitch = 0; 
+
 	this->gDevice->CreateBuffer(&iBufferDesc, &iBufferData, &this->iBuffer);
-	
+
 }
 
-Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *& inGDevice, ID3D11DeviceContext *& inGDeviceContext)
+Object::Object(const Mesh &inMesh, const DirectX::XMMATRIX &inWorld, ID3D11Device *&inGDevice)
 {
 	this->mesh = inMesh;
 	this->world = inWorld;
-	this->gDevice = inGDevice;
-	this->gDeviceContext = inGDeviceContext;
+	this->gDevice = inGDevice;	
 	this->isVisible = false;
 	this->isColliding = false;
 
@@ -48,7 +47,7 @@ Object::Object(const Mesh &inMesh, DirectX::XMMATRIX inWorld, ID3D11Device *& in
 Object::~Object()
 {	
 	vBuffer->Release();
-	//iBuffer->Release();
+	iBuffer->Release();
 }
 
 void Object::operator=(const Object & obj)
@@ -77,37 +76,37 @@ void Object::setCollision(const bool &inIsColliding)
 	this->isColliding = inIsColliding;
 }
 
-Mesh Object::getMesh() const
+Mesh Object::getMesh()	const
 {
 	return this->mesh;
 }
 
-DirectX::XMMATRIX Object::getWorldMatrix()
+DirectX::XMMATRIX Object::getWorldMatrix()	const
 {
 	return this->world;
 }
 
-ID3D11Buffer * Object::getVBuffer() const
+ID3D11Buffer * Object::getVBuffer()	const
 {
 	return this->vBuffer;
 }
 
-ID3D11Buffer * Object::getIBuffer() const
+ID3D11Buffer * Object::getIBuffer()	const
 {
 	return this->iBuffer;
 }
 
-Object::DrawInformation Object::getDrawInfo()
+Object::DrawInformation Object::getDrawInfo()	const
 {
 	return this->drawInfo;
 }
 
-bool Object::getVisibility() const
+bool Object::getVisibility()	const
 {
 	return this->isVisible;
 }
 
-bool Object::getCollision() const
+bool Object::getCollision()	const
 {
 	return this->isColliding;
 }
