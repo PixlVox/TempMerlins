@@ -118,13 +118,13 @@ void Engine::update(Camera* cam, std::vector<Geometry>* objects) {
 		this->updateMatrices(cam, &objects->at(i));
 
 		//Update shader
-		this->shaders.setBuffers(objects->at(i).getVBuffer(), objects->at(i).getIBuffer());
+		//this->shaders.setBuffers(objects->at(i).getVBuffer(), objects->at(i).getIBuffer());
 
-		this->shaders.createShader(SHADER::VertexColor);
+		this->shaders.createShader(SHADER::VertexNormal);
 
-		/*this->shaders.setShaderParams(objects->at(i).getWorld(), objects->at(i).getSpec(), 
+		this->shaders.setShaderParams(objects->at(i).getWorld(), objects->at(i).getSpec(), 
 			objects->at(i).getDif(), objects->at(i).getEmissive(), objects->at(i).getSpecExponent(),
-			objects->at(i).getOpaciy());*/		
+			objects->at(i).getOpaciy());		
 
 		//Render
 		this->render(&objects->at(i));
@@ -410,15 +410,15 @@ void Engine::setViewPort() {
 void Engine::render(Geometry* object) {
 
 	//Set rendering state
-	//UINT32 vertexSize = sizeof(float) * 6;
-	//UINT32 offset = 0;
+	UINT32 vertexSize = sizeof(float) * 6;
+	UINT32 offset = 0;
 
 	//Bind vertex buffer
-	//ID3D11Buffer* tempVBuffer = object->getVBuffer();
-	//this->deviceC->IASetVertexBuffers(0, 1, &tempVBuffer, &vertexSize, &offset);
+	ID3D11Buffer* tempVBuffer = object->getVBuffer();
+	this->deviceC->IASetVertexBuffers(0, 1, &tempVBuffer, &vertexSize, &offset);
 
 	//Bind index buffer
-	//this->deviceC->IASetIndexBuffer(object->getIBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	this->deviceC->IASetIndexBuffer(object->getIBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	/*
 	//Set input layout
@@ -439,10 +439,12 @@ void Engine::render(Geometry* object) {
 	this->deviceC->GSSetConstantBuffers(0, 1, &this->constBufferMatrix);
 	this->deviceC->PSSetConstantBuffers(0, 1, &this->constBufferLight);
 
-	Set primitive type
-	this->deviceC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
 
 	*/
+
+	//Set primitive type
+	this->deviceC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// draw geometry
 	this->deviceC->DrawIndexed(object->getFaceCount() * 3, 0, 0);

@@ -2,10 +2,10 @@
 
 void Shaders::createVertexPositionColorShader()
 {
-	UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionColor::InputElementCount;
+	/*UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionColor::InputElementCount;
 	UINT32 offset = 0;
 	this->gDeviceContext->IASetVertexBuffers(0, 1, &this->vBuffer, &vertexSize, &offset);
-	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);
+	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);*/
 
 	 //vet inte om det funkar
 	
@@ -28,7 +28,7 @@ void Shaders::createVertexPositionColorShader()
 
 	this->m_effect->Apply(this->gDeviceContext);
 
-	this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->gDeviceContext->IASetInputLayout(m_inputLayout.Get());
 	
@@ -36,10 +36,10 @@ void Shaders::createVertexPositionColorShader()
 
 void Shaders::createVertexPositionNormalShader()
 {
-	UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionNormal::InputElementCount;
+	/*UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionNormal::InputElementCount;
 	UINT32 offset = 0;
 	this->gDeviceContext->IASetVertexBuffers(0, 1, &this->vBuffer, &vertexSize, &offset);
-	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);
+	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);*/
 
 	this->m_effect->SetVertexColorEnabled(true); //kanske ska vara avstängd här, förstår inte riktigt vad den gör.
 
@@ -60,7 +60,7 @@ void Shaders::createVertexPositionNormalShader()
 
 	this->m_effect->Apply(this->gDeviceContext);
 
-	this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->gDeviceContext->IASetInputLayout(m_inputLayout.Get());
 
@@ -68,10 +68,10 @@ void Shaders::createVertexPositionNormalShader()
 
 void Shaders::createVertexPositionNormalTextureShader()
 {
-	UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionNormalTexture::InputElementCount;
+	/*UINT32 vertexSize = sizeof(float) * DirectX::VertexPositionNormalTexture::InputElementCount;
 	UINT32 offset = 0;
 	this->gDeviceContext->IASetVertexBuffers(0, 1, &this->vBuffer, &vertexSize, &offset);
-	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);
+	this->gDeviceContext->IASetIndexBuffer(this->iBuffer, DXGI_FORMAT_R32_UINT, offset);*/
 
 	//this->m_effect->SetVertexColorEnabled(true); //kanske ska vara avstängd här, förstår inte riktigt vad den gör.
 
@@ -92,7 +92,7 @@ void Shaders::createVertexPositionNormalTextureShader()
 
 	this->m_effect->Apply(this->gDeviceContext);
 
-	this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//this->gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	this->gDeviceContext->IASetInputLayout(m_inputLayout.Get());
 }
@@ -152,12 +152,13 @@ void Shaders::createShader(SHADER whatShader)
 		break;
 	}
 }
+//
+//void Shaders::setBuffers(ID3D11Buffer* in_vBuffer, ID3D11Buffer* in_iBuffer)
+//{
+//	this->vBuffer = in_vBuffer;
+//	this->iBuffer = in_iBuffer;
+//}
 
-void Shaders::setBuffers(ID3D11Buffer* in_vBuffer, ID3D11Buffer* in_iBuffer)
-{
-	this->vBuffer = in_vBuffer;
-	this->iBuffer = in_iBuffer;
-}
 void Shaders::setShaderParams(DirectX::XMMATRIX in_WMatrix, DirectX::SimpleMath::Vector3 in_SpecColor, DirectX::SimpleMath::Vector3 in_DiffuseColor,
 	DirectX::SimpleMath::Vector3 in_Emissive, float in_SpecExponent, float in_Opacity)
 {
